@@ -21,11 +21,13 @@ class TodoDao extends DatabaseAccessor<MyDatabase> with _$TodoDaoMixin {
 
   Future insertTask(Todo task) => into(todos).insert(task);
 
-  Future bulkInsertTask(List<Todo> task) => batch((batch) {
+  Future bulkInsertTask(List<TodosCompanion> task) => batch((batch) {
         batch.insertAll(todos, task);
       });
 
   Future updateTask(Todo task) => update(todos).replace(task);
 
-  Future deleteTask(Todo task) => delete(todos).delete(task);
+  Future deleteTask(Todo task) => (delete(todos)..where((tbl) => tbl.id.equals(task.id))).go();
+  
+  Future deleteAll() => delete(todos).go();
 }

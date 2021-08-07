@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_moor_example/database/tables/category/categories_dao.dart';
+import 'package:moor/moor.dart' as moor;
 
+import './database/tables/todo/todo_dao.dart';
 import 'database/moor_database.dart';
 
 late MyDatabase database;
@@ -65,6 +68,76 @@ class _MyHomePageState extends State<MyHomePage> {
           // the App.build method, and use it to set our appbar title.
           title: Text(widget.title),
         ),
-        body: Container());
+        body: Column(
+          children: [
+            ElevatedButton(onPressed: () => addRecords(), child: Text("Add Records")),
+            Expanded(
+              child: StreamBuilder<List<Todo>>(
+                  stream: new TodoDao(database).watchAllTasks(),
+                  builder: (context, snapshot) {
+                    if (snapshot.data == null) return Container();
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        Todo obj = snapshot.data![index];
+                        return ListTile(
+                          title: Text("Title ${obj.title}"),
+                        );
+                      },
+                    );
+                  }),
+            )
+          ],
+        ));
+  }
+
+  addRecords() async {
+    // CategoriesDao categoriesDao = new CategoriesDao(database);
+    // await categoriesDao.bulkInsertTask([
+    //   CategoriesCompanion(description: moor.Value("Flutter")),
+    //   CategoriesCompanion(description: moor.Value("Android")),
+    //   CategoriesCompanion(description: moor.Value("Java")),
+    //   CategoriesCompanion(description: moor.Value("PHP")),
+    //   CategoriesCompanion(description: moor.Value("OTHER")),
+    // ]);
+
+    TodoDao todoDao = new TodoDao(database);
+    await todoDao.bulkInsertTask([
+      TodosCompanion(
+        title: moor.Value("Write Blog ${DateTime.now().microsecondsSinceEpoch}" ),
+        category: moor.Value(1),
+        content: moor.Value("Write blog about Moor Database"),
+      ),
+      // TodosCompanion(
+      //   title: moor.Value("Write Blog"),
+      //   category: moor.Value(1),
+      //   content: moor.Value("Write blog about Moor Database"),
+      // ),
+      // TodosCompanion(
+      //   title: moor.Value("Write Blog"),
+      //   category: moor.Value(2),
+      //   content: moor.Value("Write blog about Moor Database"),
+      // ),
+      // TodosCompanion(
+      //   title: moor.Value("Write Blog"),
+      //   category: moor.Value(2),
+      //   content: moor.Value("Write blog about Moor Database"),
+      // ),
+      // TodosCompanion(
+      //   title: moor.Value("Write Blog"),
+      //   category: moor.Value(3),
+      //   content: moor.Value("Write blog about Moor Database"),
+      // ),
+      // TodosCompanion(
+      //   title: moor.Value("Write Blog"),
+      //   category: moor.Value(4),
+      //   content: moor.Value("Write blog about Moor Database"),
+      // ),
+    ]);
+
+    print("Record Inserted in Database");
+
+    // print("Total Records in Category : ${await categoriesDao.getTotalRecords()}");
+    print("Total Records in TODO : ${await todoDao.getTotalRecords()}");
   }
 }

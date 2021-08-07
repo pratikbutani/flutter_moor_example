@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter_moor_example/database/tables/category/categories_table.dart';
 import 'package:moor/ffi.dart';
 import 'package:moor_flutter/moor_flutter.dart';
 import 'package:path/path.dart' as p;
@@ -28,9 +30,11 @@ clearDatabase() {}
 @UseMoor(
   tables: [
     Todos,
+    Categories
   ],
   daos: [
     TodoDao,
+
   ],
 )
 class MyDatabase extends _$MyDatabase {
